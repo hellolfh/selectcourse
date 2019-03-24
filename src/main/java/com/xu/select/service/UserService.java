@@ -26,6 +26,8 @@ public interface UserService {
     public void updateCourse(Course course);
 
     public ChooseStartTime getChooseStartTime();
+    void saveChooseStartTime(ChooseStartTime chooseStartTime);
+    void updateChooseStartTime(ChooseStartTime chooseStartTime);
     // 某老师选某课
     public void selectCourse(String teacherNumber, String courseNumber);
     // 某老师取消选某课

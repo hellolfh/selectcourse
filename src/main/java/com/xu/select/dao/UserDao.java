@@ -27,7 +27,10 @@ public interface UserDao {
     // 修改一门课
     public void updateCourse(@Param("course") Course course);
 
-    public ChooseStartTime getChooseStartTime();
+    ChooseStartTime getChooseStartTime();
+    void saveChooseStartTime(@Param("chooseStartTime") ChooseStartTime chooseStartTime);
+    void updateChooseStartTime(@Param("chooseStartTime") ChooseStartTime chooseStartTime);
+
     // 某老师选某课
     public void selectCourse(@Param("teacherNumber") String teacherNumber, @Param("courseNumber") String courseNumber);
     // 某老师取消选某课

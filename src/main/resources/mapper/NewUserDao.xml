@@ -43,6 +43,17 @@
         SELECT * FROM ChooseStartTime
     </select>
 
+    <insert id="saveChooseStartTime">
+        INSERT INTO ChooseStartTime(startTime)
+        VALUES (#{chooseStartTime.startTime})
+    </insert>
+
+    <update id="updateChooseStartTime" parameterType="ChooseStartTime">
+        UPDATE ChooseStartTime SET
+        startTime=#{chooseStartTime.startTime}
+        WHERE id=#{chooseStartTime.id}
+    </update>
+
     <insert id="selectCourse">
         INSERT INTO CourseChoose(teacherNumber, courseNumber)
         VALUES (#{teacherNumber},#{courseNumber})

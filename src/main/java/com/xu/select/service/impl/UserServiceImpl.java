@@ -64,6 +64,13 @@ public class UserServiceImpl implements UserService {
         return chooseStartTime;
     }
 
+    public void saveChooseStartTime(ChooseStartTime chooseStartTime) {
+        userDao.saveChooseStartTime(chooseStartTime);
+    }
+
+    public void updateChooseStartTime(ChooseStartTime chooseStartTime) {
+        userDao.updateChooseStartTime(chooseStartTime);
+    }
     @Override
     public void selectCourse(String teacherNumber, String courseNumber) {
         userDao.selectCourse(teacherNumber, courseNumber);

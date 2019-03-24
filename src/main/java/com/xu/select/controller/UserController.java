@@ -12,7 +12,6 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -95,7 +94,8 @@ public class UserController {
         return "teacher/depHeadIndex";
     }
     @RequestMapping("/adminIndex")
-    public String adminIndex() {
+    public String adminIndex( Model model) {
+        model.addAttribute("chooseStartTime", userService.getChooseStartTime());
         return "teacher/adminIndex";
     }
 
@@ -197,6 +197,20 @@ public class UserController {
         Course course = userService.getCourseByCourseNumber(courseid);
         model.addAttribute("detail", course);
         return "teacher/courseDetail";
+    }
+
+    @RequestMapping("/setChooseStartTime")
+    public String setChooseStartTime(ChooseStartTime chooseStartTime) {
+        ChooseStartTime dbChooseStartTime = userService.getChooseStartTime();
+        if (dbChooseStartTime == null) {
+            //增加一行记录
+            userService.saveChooseStartTime(chooseStartTime);
+        } else {
+            dbChooseStartTime.setStartTime(chooseStartTime.getStartTime());
+            // 修改一行记录
+            userService.updateChooseStartTime(dbChooseStartTime);
+        }
+        return "";
     }
 
     @RequestMapping("/uploadCourseExcel")
