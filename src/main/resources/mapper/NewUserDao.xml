@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xu.select.dao.UserDao">
+
+    <select id="getByTeacherNumber" resultType="Teacher" parameterType="String">
+        SELECT * FROM Teacher WHERE teacherNumber=#{teacherNumber}
+    </select>
+
+    <update id="updatePassword" parameterType="Teacher">
+        UPDATE Teacher SET
+        password=#{teacher.password}
+        WHERE teacherNumber=#{teacher.teacherNumber}
+    </update>
+    <select id="getAllTeacher" resultType="Teacher">
+        SELECT * FROM Teacher
+    </select>
+
+    <select id="getCourseByInstitutionNumber" resultType="Course" parameterType="String">
+        SELECT * FROM Course WHERE institutionNumber=#{institutionNumber}
+    </select>
+
+    <insert id="addCourse" parameterType="Course">
+        INSERT INTO Course(courseNumber,courseName,property,className,stuTotal,classHour,shiyanHour,note,institutionNumber,institutionName)
+        VALUES (#{course.courseNumber},#{course.courseName},#{course.property}, #{course.className},#{course.stuTotal},
+        #{course.classHour}, #{course.shiyanHour},#{course.note},#{course.institutionNumber},#{course.institutionName})
+    </insert>
+
+    <delete id="deleteCourse" parameterType="String">
+        DELETE FROM Course WHERE courseNumber=#{courseNumber}
+    </delete>
+
+    <update id="updateCourse" parameterType="Course">
+        UPDATE Course SET
+        courseName=#{course.courseName},property=#{course.property},className=#{course.className},
+        stuTotal=#{course.stuTotal},classHour=#{course.classHour},
+        shiyanHour=#{course.shiyanHour},note=#{course.note},institutionNumber=#{course.institutionNumber},
+        institutionName=#{course.institutionName}
+        WHERE courseNumber=#{course.courseNumber}
+    </update>
+
+    <select id="getChooseStartTime" resultType="ChooseStartTime">
+        SELECT * FROM ChooseStartTime
+    </select>
+
+    <insert id="selectCourse">
+        INSERT INTO CourseChoose(teacherNumber, courseNumber)
+        VALUES (#{teacherNumber},#{courseNumber})
+    </insert>
+
+    <delete id="cancelSelectCourse">
+        delete from CourseChoose
+        where teacherNumber=#{teacherNumber} and courseNumber=#{courseNumber}
+    </delete>
+
+    <select id="getCourseChooseBy" resultType="CourseChoose">
+        SELECT * FROM CourseChoose
+        where teacherNumber=#{teacherNumber} and courseNumber=#{courseNumber}
+    </select>
+
+    <select id="getChoosedCourseByTeacherNumber" resultType="Course">
+        SELECT b.* FROM CourseChoose a, Course b
+        where a.teacherNumber=#{teacherNumber} and a.courseNumber=b.courseNumber
+    </select>
+
+    <select id="getAllCourse" resultType="Course">
+        SELECT * FROM Course
+    </select>
+
+    <select id="getCourseByCourseNumber" resultType="Course">
+        SELECT * FROM Course where courseNumber=#{courseNumber}
+    </select>
+
+    <select id="getAllInstitution" resultType="Institution">
+        SELECT * FROM Institution
+    </select>
+
+
+    <select id="getInstitutionByNumber" resultType="Institution">
+        SELECT * FROM Institution where institutionNumber = #{institutionNumber}
+    </select>
+</mapper>
