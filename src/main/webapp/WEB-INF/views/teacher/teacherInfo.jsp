@@ -31,6 +31,10 @@
             <td>学院</td>
             <td>${teacher.institutionName}</td>
         </tr>
+        <tr>
+            <td>角色</td>
+            <td>${teacher.role}</td>
+        </tr>
         </tbody>
     </table>
     <button class="layui-btn layui-btn-danger  layui-btn-lg" onclick="change()" style="margin:0 550px;">
