@@ -68,15 +68,13 @@ public class UserController {
             //这里不加redirect，否则前端el取不到值
             return "login";
         }
-        model.addAttribute("username", teacher.getName());
-        model.addAttribute("number", teacher.getTeacherNumber());
         request.getSession().setAttribute("user", teacher);
         if (role_teacher.equals(teacher.getRole())) {
             return "teacher/teacherIndex";
         } else if (role_depHead.equals(teacher.getRole())) {
-            return "teacher/depHeadIndex";
+            return "teacher/teacherIndex";
         } else if (role_admin.equals(teacher.getRole())) {
-            return "teacher/adminIndex";
+            return "redirect:adminIndex";
         }
         return "login";
     }
@@ -161,11 +159,9 @@ public class UserController {
 
     @RequestMapping("/editCourse")
     public String editCourse(@Param("courseid") String courseid, Model model) {
-        //
         List<Institution> institutions = userService.getAllInstitution();
         Course course = userService.getCourseByCourseNumber(courseid);
-        model.addAttribute("courseInfo", course);
-        model.addAttribute("checkIns", course.getStuTotal());
+        model.addAttribute("course", course);
         model.addAttribute("insList", institutions);
         return "teacher/editCourse";
     }

@@ -10,30 +10,62 @@
         String path = request.getContextPath();
         String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
     %>
-    <form class="layui-form" id="changeform" method="post" action="<%=basePath%>teacher/changeTeaPass" style="margin:80px 400px; width:450px;">
+    <form class="layui-form" id="changeform" method="post" action="<%=basePath%>user/updateCourseSuccess" style="margin:80px 400px; width:450px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">课程编号</label>
+            <div class="layui-input-block">
+                <input type="text" name="courseNumber" value="${course.courseNumber}" id="courseNumber" placeholder="请输入课程编号" autocomplete="off" class="layui-input">
+            </div>
+        </div>
         <div class="layui-form-item">
             <label class="layui-form-label">课程名称</label>
             <div class="layui-input-block">
-                <input value="${courseInfo.className}" type="text" name="coursename" id="name" placeholder="请输入课程名称" autocomplete="off" class="layui-input">
+                <input type="text" name="courseName" value="${course.courseName}" id="courseName" placeholder="请输入课程名称" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">人数限制</label>
+            <label class="layui-form-label">课程属性</label>
             <div class="layui-input-block">
-                <input value="${courseInfo.classNum}" type="text" name="coursenum" id="num" placeholder="请输入人数" autocomplete="off" class="layui-input">
+                <input type="text" name="property" value="${course.property}" id="property" placeholder="请输入课程属性" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">学院限制</label>
+            <label class="layui-form-label">班级</label>
+            <div class="layui-input-block">
+                <input type="text" name="className" value="${course.className}" id="className" placeholder="请输入课程班级" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">学生人数</label>
+            <div class="layui-input-block">
+                <input type="text" name="stuTotal" value="${course.stuTotal}" id="stuTotal" placeholder="请输入学生人数" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">学时数</label>
+            <div class="layui-input-block">
+                <input type="text" name="classHour" value="${course.classHour}" id="classHour" placeholder="请输入学时数" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">实验学时数</label>
+            <div class="layui-input-block">
+                <input type="text" name="shiyanHour" value="${course.shiyanHour}" id="shiyanHour" placeholder="请输入实验学时数" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <input type="text" name="note" value="${course.note}" placeholder="请输入备注" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属系</label>
             <div class="layui-input-block">
                 <c:forEach items="${insList}" var="ins">
-                    <input type="checkbox" name="ins" value="${ins.insId}" title="${ins.insName}"
-                    <c:forEach items="${checkIns}" var="checkins">
-                        <c:if test="${ins.insId==checkins}">
-                            checked
-                        </c:if>
-                    </c:forEach>
-                    >
+                    <input type="radio" name="institutionNumber" value="${ins.institutionNumber}" title="${ins.name}"
+                    <c:if test="${ins.institutionNumber eq course.institutionNumber}"> checked="checked" </c:if>/>
+
                 </c:forEach>
             </div>
         </div>
@@ -49,35 +81,8 @@
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
     <script>
         $(function () {
-            $("#success").click(function () {
-                var name = $("#name").val();
-                var num = $("#num").val();
-                var ins = "";
-                var count=0;
-                $("input[name='ins']:checked").each(function () {
-                    count++;
-                    if (count === 1) {
-                        ins = ins + $(this).attr("value");
-                    }
-                    else {
-                        ins = ins + "," + $(this).attr("value");
-                    }
-                })
-                var content=name+"|"+num+"|"+ins;
-                var myform=document.createElement("form");
-                myform.id = "form1";
-                myform.name = "form1";
-                document.body.appendChild(myform);
-                var input = document.createElement("input");
-                input.type = "text";
-                input.name = "content";
-                input.value = encodeURIComponent(encodeURIComponent(content));
-                myform.appendChild(input);
-                myform.method = "POST";
-                myform.action = "<%=basePath%>teacher/updateCourseSuccess?page"+1;
-                myform.submit();
-                document.body.removeChild(myform);
-            })
+            $("#success1").click(function () {
+            });
         })
     </script>
 </rapid:override>
