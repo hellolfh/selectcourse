@@ -62,7 +62,7 @@ public class UserController {
         } else if (role_depHead.equals(teacher.getRole())) {
             return "teacher/teacherIndex";
         } else if (role_admin.equals(teacher.getRole())) {
-            return "redirect:adminIndex";
+            return "teacher/teacherIndex";
         }
         return "teacher/teacherIndex";
     }
@@ -89,7 +89,7 @@ public class UserController {
         } else if (role_depHead.equals(teacher.getRole())) {
             return "teacher/teacherIndex";
         } else if (role_admin.equals(teacher.getRole())) {
-            return "redirect:adminIndex";
+            return "teacher/teacherIndex";
         }
         return "login";
     }
@@ -212,7 +212,7 @@ public class UserController {
         course.setInstitutionName(institution.getName());
         userService.addCourse(course);
         model.addAttribute("paging", pageService.subList(1, userService.getChoosedCourseByTeacherNumber(teacher.getTeacherNumber())));
-        return "teacher/courseList";
+        return "redirect:courseList?page=1";
     }
 
     // 点击修改课程时候进入的页面
