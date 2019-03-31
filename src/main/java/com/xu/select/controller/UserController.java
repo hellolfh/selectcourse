@@ -1,10 +1,10 @@
 package com.xu.select.controller;
 
+import com.xu.select.bean.CourseBean;
 import com.xu.select.bean.QueryBean;
 import com.xu.select.excel.ImportExcelUtil;
 import com.xu.select.model.ChooseStartTime;
 import com.xu.select.model.Course;
-import com.xu.select.model.CourseChoose;
 import com.xu.select.model.Institution;
 import com.xu.select.model.Teacher;
 import com.xu.select.service.PageService;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -36,6 +37,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
+@SessionAttributes(value ={"currentUser"},types={Teacher.class})
 public class UserController {
     public static String role_teacher = "teacher";
     public static String role_depHead = "depHead";
@@ -49,11 +51,12 @@ public class UserController {
 
     // 用户点击首页时候的按钮进入的页面
     @RequestMapping("/index")
-    public String index(HttpServletRequest request) {
+    public String index(HttpServletRequest request, Model model) {
         Teacher teacher = getLoginUser(request);
         if (teacher == null) {
             return "redirect:login";
         }
+        model.addAttribute("currentUser", teacher);
         if (role_teacher.equals(teacher.getRole())) {
             return "teacher/teacherIndex";
         } else if (role_depHead.equals(teacher.getRole())) {
@@ -62,12 +65,6 @@ public class UserController {
             return "redirect:adminIndex";
         }
         return "teacher/teacherIndex";
-    }
-
-    // 点击excel导入进入的页面
-    @RequestMapping("/excelImportIndex")
-    public String excelImportIndex() {
-        return "teacher/excelImport";
     }
 
     // 登录页面，会有用户名密码需要用户输入
@@ -86,6 +83,7 @@ public class UserController {
             return "login";
         }
         request.getSession().setAttribute("user", teacher);
+        model.addAttribute("currentUser", teacher);
         if (role_teacher.equals(teacher.getRole())) {
             return "teacher/teacherIndex";
         } else if (role_depHead.equals(teacher.getRole())) {
@@ -102,6 +100,7 @@ public class UserController {
         request.getSession().invalidate();
         return "login";
     }
+
 
     @RequestMapping("/teacherIndex")
     public String teacherIndex() {
@@ -121,8 +120,12 @@ public class UserController {
 
     //当前登录者的信息页面
     @RequestMapping("/info")
-    public String userInfo(@RequestParam("teacherNumber") String teacherNumber, Model model) {
-        model.addAttribute("teacher", userService.getByTeacherNumber(teacherNumber));
+    public String userInfo(@RequestParam("teacherNumber") String teacherNumber, Model model, HttpServletRequest request) {
+        Teacher teacher = getLoginUser(request);
+        if (teacher == null) {
+            return "redirect:login";
+        }
+        model.addAttribute("currentUser", teacher);
         return "teacher/teacherInfo";
     }
 
@@ -155,6 +158,9 @@ public class UserController {
                              QueryBean query,
                              Model model, HttpServletRequest request) {
         Teacher teacher = getLoginUser(request);
+        if (teacher == null) {
+            return "redirect:login";
+        }
         List<Course> courses = new ArrayList<>();
         if (role_admin.equals(teacher.getRole())) {
             if (!query.isSetValue()) {
@@ -162,46 +168,38 @@ public class UserController {
             } else {
                 courses = userService.query(query);
             }
-            model.addAttribute("paging", pageService.subList(page, courses));
-            return "teacher/adminCourseList";
         } else if (role_depHead.equals(teacher.getRole())) {
+            // 系主任可以看到该系的所有的课程
             if (!query.isSetValue()) {
                 String institutionNumber = teacher.getInstitutionNumber();
                 courses = userService.getCourseByInstitutionNumber(institutionNumber);
             } else {
                 courses = userService.query(query);
             }
-            model.addAttribute("paging", pageService.subList(page, courses));
-            return "teacher/depHeadCourseList";
         } else {
             if (!query.isSetValue()) {
-                // 普通老师
+                // 普通老师也可以看到所在系的所有的课程
                 String institutionNumber = teacher.getInstitutionNumber();
                 courses = userService.getCourseByInstitutionNumber(institutionNumber);
             } else {
                 courses = userService.query(query);
             }
-            model.addAttribute("paging", pageService.subList(page, courses));
-            return "teacher/courseList";
         }
-
+        List<CourseBean> courseBeans = userService.convertToCourseBeanList(courses);
+        model.addAttribute("paging", pageService.subList(page, courseBeans));
+        return "teacher/courseList";
     }
 
     // 点击新增课程时候的页面
     @RequestMapping("/insertCourse")
-    public String insertCourse(Model model) {
+    public String insertCourse(Model model, HttpServletRequest request) {
+        Teacher teacher = getLoginUser(request);
+        if (teacher == null) {
+            return "redirect:login";
+        }
         List<Institution> institutions = userService.getAllInstitution();
         model.addAttribute("insList", institutions);
         return "teacher/insertCourse";
-    }
-
-    @RequestMapping("/editCourse")
-    public String editCourse(@Param("courseid") String courseid, Model model) {
-        List<Institution> institutions = userService.getAllInstitution();
-        Course course = userService.getCourseByCourseNumber(courseid);
-        model.addAttribute("course", course);
-        model.addAttribute("insList", institutions);
-        return "teacher/editCourse";
     }
 
     // 点击新增课程页面，然后在页面里输入课程信息，点进新增插入某一门课程
@@ -217,9 +215,20 @@ public class UserController {
         return "teacher/courseList";
     }
 
-    // 修改某个课程的信息，比如课程名
+    // 点击修改课程时候进入的页面
+    @RequestMapping("/editCourse")
+    public String editCourse(@Param("courseid") String courseid, Model model) {
+        List<Institution> institutions = userService.getAllInstitution();
+        Course course = userService.getCourseByCourseNumber(courseid);
+        model.addAttribute("course", userService.convertToCourseBean(course));
+        model.addAttribute("insList", institutions);
+        return "teacher/editCourse";
+    }
+
+
+    // 在修改课程页面修改某个课程的信息，比如课程名，点击确定后的页面
     @RequestMapping("/updateCourseSuccess")
-    public String updateCourseSuccess(@RequestBody Course course, @Param("page") int page, Model model, HttpServletRequest request) {
+    public String updateCourseSuccess(@RequestBody CourseBean course, @Param("page") int page, Model model, HttpServletRequest request) {
         userService.updateCourse(course);
         model.addAttribute("paging", pageService.subList(page, userService.getAllCourse()));
         return "teacher/courseList";
@@ -233,6 +242,7 @@ public class UserController {
         return "teacher/courseList";
     }
 
+    //
     @RequestMapping("/detailCourse")
     public String detailCourse(@Param("courseid") String courseid, Model model, HttpServletRequest request) {
         Course course = userService.getCourseByCourseNumber(courseid);
@@ -240,19 +250,14 @@ public class UserController {
         return "teacher/courseDetail";
     }
 
-    // 设置选课开始时间
-    @RequestMapping("/setChooseStartTime")
-    public String setChooseStartTime(ChooseStartTime chooseStartTime) {
-        ChooseStartTime dbChooseStartTime = userService.getChooseStartTime();
-        if (dbChooseStartTime == null) {
-            //增加一行记录
-            userService.saveChooseStartTime(chooseStartTime);
-        } else {
-            dbChooseStartTime.setStartTime(chooseStartTime.getStartTime());
-            // 修改一行记录
-            userService.updateChooseStartTime(dbChooseStartTime);
+    // 点击excel导入进入的页面
+    @RequestMapping("/excelImportIndex")
+    public String excelImportIndex(Model model, HttpServletRequest request) {
+        Teacher teacher = getLoginUser(request);
+        if (teacher == null) {
+            return "redirect:login";
         }
-        return "";
+        return "teacher/excelImport";
     }
 
     // 将老师上传的excel课程文档插入到数据库里
@@ -292,53 +297,8 @@ public class UserController {
         return "success";
     }
 
-    // 当前老师选某门课
-    @RequestMapping(value = "/selectCourse")
-    @ResponseBody
-    public String selectCourse(String courseNumber, HttpServletRequest request) {
-        Teacher teacher = getLoginUser(request);
-        userService.selectCourse(teacher.getTeacherNumber(),courseNumber);
-        return "success";
-    }
 
-    // 当前老师取消选某门课
-    @RequestMapping(value = "/unselectCourse")
-    @ResponseBody
-    public String unselectCourse(String courseNumber, HttpServletRequest request) {
-        Teacher teacher = getLoginUser(request);
-        userService.cancelSelectCourse(teacher.getTeacherNumber(),courseNumber);
-        return "success";
-    }
-
-    @RequestMapping(value = "/query", method = RequestMethod.POST)
-    public String query(QueryBean query, Model model) {
-        List<Course> courses = userService.query(query);
-        model.addAttribute("paging", pageService.subList(1, courses));
-        return "redirect:courseList?page=1";
-    }
-
-    // 课程查询首页
-    @RequestMapping("/queryIndex")
-    public String queryIndex() {
-        return "teacher/shaixuan";
-    }
-
-    // 点击查询按钮时的处理，返回查询到的课程的table列表
-    @RequestMapping("/fillQueryTable")
-    @ResponseBody
-    public Map<String, List<Course>> fillQueryTable(Model model, QueryBean query) {
-        List<Course> courses = new ArrayList<>();
-        if (query.isSetValue()) {
-            courses = userService.query(query);
-        } else {
-            courses = userService.getAllCourse();
-        }
-        Map<String, List<Course>> pp = new HashMap<>();
-        pp.put("data", courses);
-        return pp;
-    }
-
-    // 下载excel
+    // 点击下载excel按钮时候的处理逻辑
     @RequestMapping("/downloadExcel")
     @ResponseBody
     public void downloadExcel(QueryBean query, HttpServletResponse response) {
@@ -365,6 +325,72 @@ public class UserController {
         }
     }
 
+    // 当前老师选某门课
+    @RequestMapping(value = "/selectCourse")
+    @ResponseBody
+    public String selectCourse(String courseNumber, HttpServletRequest request) {
+        Teacher teacher = getLoginUser(request);
+        userService.selectCourse(teacher.getTeacherNumber(),courseNumber);
+        return "success";
+    }
+
+    // 当前老师取消选某门课
+    @RequestMapping(value = "/unselectCourse")
+    @ResponseBody
+    public String unselectCourse(String courseNumber, HttpServletRequest request) {
+        Teacher teacher = getLoginUser(request);
+        userService.cancelSelectCourse(teacher.getTeacherNumber(),courseNumber);
+        return "success";
+    }
+
+    // 没用了
+    @RequestMapping(value = "/query", method = RequestMethod.POST)
+    public String query(QueryBean query, Model model) {
+        List<Course> courses = userService.query(query);
+        model.addAttribute("paging", pageService.subList(1, courses));
+        return "redirect:courseList?page=1";
+    }
+
+    // 课程查询首页
+    @RequestMapping("/queryIndex")
+    public String queryIndex(HttpServletRequest request) {
+        Teacher teacher = getLoginUser(request);
+        if (teacher == null) {
+            return "redirect:login";
+        }
+        return "teacher/shaixuan";
+    }
+
+    // 在课程查询页面点击查询按钮时的处理，返回查询到的课程的table列表
+    @RequestMapping("/fillQueryTable")
+    @ResponseBody
+    public Map<String, List<Course>> fillQueryTable(Model model, QueryBean query) {
+        List<Course> courses = new ArrayList<>();
+        if (query.isSetValue()) {
+            courses = userService.query(query);
+        } else {
+            courses = userService.getAllCourse();
+        }
+        Map<String, List<Course>> pp = new HashMap<>();
+        pp.put("data", courses);
+        return pp;
+    }
+
+
+    // 设置选课开始时间
+    @RequestMapping("/setChooseStartTime")
+    public String setChooseStartTime(ChooseStartTime chooseStartTime) {
+        ChooseStartTime dbChooseStartTime = userService.getChooseStartTime();
+        if (dbChooseStartTime == null) {
+            //增加一行记录
+            userService.saveChooseStartTime(chooseStartTime);
+        } else {
+            dbChooseStartTime.setStartTime(chooseStartTime.getStartTime());
+            // 修改一行记录
+            userService.updateChooseStartTime(dbChooseStartTime);
+        }
+        return "";
+    }
 
     public Teacher getLoginUser(HttpServletRequest request) {
         Teacher teacher = (Teacher) request.getSession().getAttribute("user");

@@ -1,5 +1,6 @@
 package com.xu.select.service.impl;
 
+import com.xu.select.bean.CourseBean;
 import com.xu.select.bean.QueryBean;
 import com.xu.select.dao.UserDao;
 import com.xu.select.model.ChooseStartTime;
@@ -14,7 +15,11 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -56,8 +61,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateCourse(Course course) {
+    public void updateCourse(CourseBean courseBean) {
+        Course course = new Course();
+        BeanUtils.copyProperties(courseBean, course);
         userDao.updateCourse(course);
+        if (!StringUtils.isEmpty(courseBean.getTeacherNumber())) {
+            CourseChoose courseChoose = getCourseChooseBy(courseBean.getTeacherNumber(), courseBean.getCourseNumber());
+            if (courseChoose == null) {
+
+            }
+        }
     }
 
     @Override
@@ -90,11 +103,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<CourseChoose> getAllCourseChoose() {
+        List<CourseChoose> choose  = userDao.getAllCourseChoose();
+        return choose;
+    }
+
+    @Override
     public List<Course> getChoosedCourseByTeacherNumber(String teacherNumber) {
         List<Course> courses = userDao.getChoosedCourseByTeacherNumber(teacherNumber);
         return courses;
     }
 
+    @Override
+    public List<CourseChoose> queryCourseByCourseNumber(String courseNumber) {
+        List<CourseChoose> courses = userDao.queryCourseByCourseNumber(courseNumber);
+        return courses;
+    }
     @Override
     public List<Course> getAllCourse() {
         List<Course> courses = userDao.getAllCourse();
@@ -105,6 +129,49 @@ public class UserServiceImpl implements UserService {
     public List<Institution> getAllInstitution() {
         List<Institution> institutions = userDao.getAllInstitution();
         return institutions;
+    }
+
+
+
+    public List<CourseBean> convertToCourseBeanList(List<Course> courses) {
+        if (CollectionUtils.isEmpty(courses)) {
+            return Collections.emptyList();
+        }
+        List<CourseChoose> courseChooses = getAllCourseChoose();
+        Map<String, CourseChoose> map = new HashMap();
+        for (CourseChoose courseChoose : courseChooses) {
+            map.put(courseChoose.getCourseNumber(), courseChoose);
+        }
+        List<CourseBean> courseBeans = new ArrayList<>();
+        for (Course course : courses) {
+            CourseBean courseBean = new CourseBean();
+            BeanUtils.copyProperties(course, courseBean);
+            if (map.containsKey(course.getCourseNumber())) {
+                String teacherNumber = map.get(course.getCourseNumber()).getTeacherNumber();
+                courseBean.setTeacherNumber(teacherNumber);
+                Teacher teacher = getByTeacherNumber(teacherNumber);
+                courseBean.setTeacherName(teacher.getName());
+            }
+            courseBeans.add(courseBean);
+        }
+        return courseBeans;
+    }
+
+    public CourseBean convertToCourseBean(Course course) {
+        List<CourseChoose> courseChooses = getAllCourseChoose();
+        Map<String, CourseChoose> map = new HashMap();
+        for (CourseChoose courseChoose : courseChooses) {
+            map.put(courseChoose.getCourseNumber(), courseChoose);
+        }
+        CourseBean courseBean = new CourseBean();
+        BeanUtils.copyProperties(course, courseBean);
+        if (map.containsKey(course.getCourseNumber())) {
+            String teacherNumber = map.get(course.getCourseNumber()).getTeacherNumber();
+            courseBean.setTeacherNumber(teacherNumber);
+            Teacher teacher = getByTeacherNumber(teacherNumber);
+            courseBean.setTeacherName(teacher.getName());
+        }
+        return courseBean;
     }
 
     @Override

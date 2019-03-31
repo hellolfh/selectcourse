@@ -1,5 +1,6 @@
 package com.xu.select.service;
 
+import com.xu.select.bean.CourseBean;
 import com.xu.select.bean.QueryBean;
 import com.xu.select.model.ChooseStartTime;
 import com.xu.select.model.Course;
@@ -9,7 +10,7 @@ import com.xu.select.model.Teacher;
 
 import java.util.List;
 
-public interface UserService {
+public interface UserService<queryCourseByCourseNumber> {
     // 根据ID获取老师信息
     public Teacher getByTeacherNumber(String teacherNumber);
     // 修改老师基本信息如用户名密码
@@ -24,7 +25,9 @@ public interface UserService {
     // 删除一门课
     public void deleteCourse(String courseNumber);
     // 修改一门课
-    public void updateCourse(Course course);
+    public void updateCourse(CourseBean course);
+
+//    List<CourseBean> convertToCourseBeanList(List<Course> courses);
 
     public ChooseStartTime getChooseStartTime();
     void saveChooseStartTime(ChooseStartTime chooseStartTime);
@@ -36,7 +39,8 @@ public interface UserService {
 
     // 某老师选某课的记录
     public CourseChoose getCourseChooseBy(String teacherNumber, String courseNumber);
-
+    List<CourseChoose> getAllCourseChoose();
+    public List<CourseChoose> queryCourseByCourseNumber(String courseNumber);
     // 某老师选了哪些课
     public List<Course> getChoosedCourseByTeacherNumber(String teacherNumber);
 
@@ -50,7 +54,9 @@ public interface UserService {
     Institution getInstitutionByNumber(String institutionNumber);
 
     void saveOrUpdateAll(List<Course> courses);
+
     void saveOrUpdate(Course course);
 
     List<Course> query(QueryBean query);
+    CourseBean convertToCourseBean(Course course);
  }

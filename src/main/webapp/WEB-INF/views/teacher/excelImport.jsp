@@ -6,17 +6,23 @@
     <title>课程信息</title>
 </rapid:override>
 <rapid:override name="content">
-    <%
-        String path = request.getContextPath();
-        String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
-    %>
-    <div style="margin-top: 50px;">
-        <form method="POST"  enctype="multipart/form-data" id="form1" action="uploadExcel/form">
-            <label>上传文件: </label>
-            <input id="upfile" type="file" name="upfile"><br> <br>
-            <input type="button" value="ajax提交" id="btn" name="btn" >
-        </form>
-    </div>
+    <c:if test="${sessionScope.user.role ne 'admin'}">
+        您不是学院管理员, 没有权限
+    </c:if>
+    <c:if test="${sessionScope.user.role eq 'admin'}">
+        <%
+            String path = request.getContextPath();
+            String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+        %>
+        <div style="margin-top: 50px;">
+            <form method="POST" enctype="multipart/form-data" id="form1" action="uploadExcel/form">
+                <label>上传文件: </label>
+                <input id="upfile" type="file" name="upfile"><br> <br>
+                <input type="button" value="ajax提交" id="btn" name="btn">
+            </form>
+        </div>
+    </c:if>
+
 </rapid:override>
 <%@ include file="base.jsp" %>
 <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>

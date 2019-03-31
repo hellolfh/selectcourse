@@ -2,6 +2,7 @@
 <%@ taglib prefix="c"
            uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.rapid-framework.org.cn/rapid" prefix="rapid" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <rapid:override name="head">
     <title>课程信息</title>
 </rapid:override>
@@ -13,38 +14,6 @@
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery.form/3.51/jquery.form.min.js"></script>
 
-    <form class="layui-form" style="margin:10px 15px 10px;">
-        <div class="layui-form-item">
-            <div class="layui-input-block">
-                <div style="display: inline-block">
-                    <div style="width: 180px; float: left; margin-left:-100px;">
-                        <select class="layui-select" id="teasearch">
-                            <option value="0">教师姓名</option>
-                            <c:forEach items="${teaList}" var="teacher">
-                                <option value="${teacher.teaId}">${teacher.teaName}</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                    <button type="button" id="tea" class="layui-btn" style="margin-left:10px;">筛选</button>
-                </div>
-                <div style="display: inline-block">
-                    <div style="width: 180px; float: left; margin-left:300px;">
-                        <select class="layui-select" id="inssearch">
-                            <option value="0">学院名称</option>
-                            <c:forEach items="${insList}" var="institution">
-                                <option value="${institution.insId}">${institution.insName}</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                    <button type="button" id="ins" class="layui-btn" style="margin-left:10px;">筛选</button>
-                </div>
-                <button type="button" class="layui-btn" style="float:right;" onclick="search()">搜索</button>
-                <input type="text" id="search" class="layui-input" style="float:right; width:200px;"
-                       placeholder="请输入课程编号">
-            </div>
-        </div>
-    </form>
-
     <table class="layui-table" style="margin-top:15px;">
         <colgroup>
             <col width="50">
@@ -54,7 +23,9 @@
             <col width="50">
             <col width="50">
             <col width="50">
-            <col width="180">
+            <col width="80">
+            <col width="150">
+            <col width="100">
         </colgroup>
         <thead>
         <tr>
@@ -67,6 +38,7 @@
             <th>实验学时数</th>
             <th>备注</th>
             <th>所属系</th>
+            <th>选课老师</th>
             <th>操作</th>
         </tr>
         </thead>
@@ -82,12 +54,21 @@
                 <td>${course.shiyanHour}</td>
                 <td>${course.note}</td>
                 <td>${course.institutionName}</td>
+                <td>${course.teacherName}</td>
                 <td>
-                    <button class="layui-btn" onclick="select_course(${course.courseNumber})">选课</button>
-                    <button class="layui-btn" onclick="unselect_course(${course.courseNumber})">退课</button>
-                    <button class="layui-btn" onclick="edit_course(${course.courseNumber})">修改</button>
-                    <button class="layui-btn" onclick="delete_course(${course.courseNumber})">删除</button>
-                    <button class="layui-btn" onclick="detail_course(${course.courseNumber})">管理</button>
+                    <c:if test="${sessionScope.currentUser.teacherNumber eq course.teacherNumber and sessionScope.currentUser.role eq 'teacher'} ">
+                        <button class="layui-btn" onclick="unselect_course(${course.courseNumber})">退课</button>
+                    </c:if>
+                    <c:if test="${fn:length(course.teacherNumber) == 0 and sessionScope.currentUser.role eq 'teacher'}">
+                        <button class="layui-btn" onclick="select_course(${course.courseNumber})">选课</button>
+                    </c:if>
+                    <c:if test="${sessionScope.currentUser.role eq 'admin' or sessionScope.currentUser.role eq 'depHead'}">
+                        <button class="layui-btn" onclick="edit_course(${course.courseNumber})">修改</button>
+                    </c:if>
+                    <c:if test="${sessionScope.currentUser.role eq 'admin'}">
+                        <button class="layui-btn" onclick="delete_course(${course.courseNumber})">删除</button>
+                        <button class="layui-btn" onclick="detail_course(${course.courseNumber})">管理</button>
+                    </c:if>
                 </td>
             </tr>
         </c:forEach>
@@ -138,11 +119,13 @@
 
         function select_course(courseNumber) {
             $.ajax({
-                url:"<%=basePath%>user/courseList",
+                url:"<%=basePath%>user/selectCourse?courseNumber=" + courseNumber,
                 type:post,
-                data: {"courseNumber":courseNumber}
+                success:function (e) {
+                    window.location.href = "<%=basePath%>user/courseList?page=1";
+                }
             });
-            window.location.href = "<%=basePath%>user/editCourse?courseid=" + classId;
+
         }
 
         function unselect_course(courseNumber) {

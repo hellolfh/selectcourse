@@ -40,8 +40,13 @@ public interface UserDao {
     // 某老师选某课的记录
     public CourseChoose getCourseChooseBy(@Param("teacherNumber") String teacherNumber, @Param("courseNumber") String courseNumber);
 
+    public List<CourseChoose> getAllCourseChoose();
+
     // 某老师选了哪些课
     public List<Course> getChoosedCourseByTeacherNumber(@Param("teacherNumber") String teacherNumber);
+
+    List<CourseChoose> queryCourseByCourseNumber(@Param("courseNumber") String courseNumber);
+
 
     List<Course> getAllCourse();
 

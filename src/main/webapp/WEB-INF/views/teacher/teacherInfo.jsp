@@ -17,23 +17,23 @@
         <tbody>
         <tr style="height:40px;">
             <td>教师号</td>
-            <td>${teacher.teacherNumber}</td>
+            <td>${currentUser.teacherNumber}</td>
         </tr>
         <tr>
             <td>姓名</td>
-            <td>${teacher.name}</td>
+            <td>${currentUser.name}</td>
         </tr>
         <tr>
             <td>密码</td>
-            <td>${teacher.password}</td>
+            <td>${currentUser.password}</td>
         </tr>
         <tr>
             <td>学院</td>
-            <td>${teacher.institutionName}</td>
+            <td>${currentUser.institutionName}</td>
         </tr>
         <tr>
             <td>角色</td>
-            <td>${teacher.role}</td>
+            <td>${currentUser.role}</td>
         </tr>
         </tbody>
     </table>

@@ -4,7 +4,7 @@ package com.xu.select.model;
 public class CourseChoose {
     private int id;
     // 哪个老师的学号
-    private int teacherNumber;
+    private String teacherNumber;
     // 哪门课程的代号
     private String courseNumber;
     // 是否选中此课程
@@ -18,10 +18,11 @@ public class CourseChoose {
         this.id = id;
     }
 
-    public int getTeacherNumber() {
+    public String getTeacherNumber() {
         return teacherNumber;
     }
-    public void setTeacherNumber(int teacherNumber) {
+
+    public void setTeacherNumber(String teacherNumber) {
         this.teacherNumber = teacherNumber;
     }
 

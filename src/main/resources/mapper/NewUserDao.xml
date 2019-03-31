@@ -101,6 +101,10 @@
         where teacherNumber=#{teacherNumber} and courseNumber=#{courseNumber}
     </delete>
 
+    <select id="queryCourseByCourseNumber">
+        select * from  CourseChoose where courseNumber=#{courseNumber}
+    </select>
+
     <select id="getCourseChooseBy" resultType="CourseChoose">
         SELECT * FROM CourseChoose
         where teacherNumber=#{teacherNumber} and courseNumber=#{courseNumber}
@@ -110,6 +114,11 @@
         SELECT b.* FROM CourseChoose a, Course b
         where a.teacherNumber=#{teacherNumber} and a.courseNumber=b.courseNumber
     </select>
+
+    <select id="getAllCourseChoose" resultType="CourseChoose">
+        SELECT * FROM CourseChoose
+    </select>
+
 
     <select id="getAllCourse" resultType="Course">
         SELECT * FROM Course
