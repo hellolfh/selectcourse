@@ -23,45 +23,8 @@
             </form>
         </div>
 
-
-        <div>
-            <button type="button" onclick="insert()" class="layui-btn layui-btn-lg layui-btn-warm" style="margin-top:15px;">
-                添加新课程
-            </button>
-        </div>
-        <div>
-            <form method="POST"  enctype="multipart/form-data" id="form1" action="uploadExcel/form">
-                <label>上传文件: </label>
-                <input id="upfile" type="file" name="upfile"><br> <br>
-                <input type="button" value="ajax提交" id="btn" name="btn" >
-            </form>
-        </div>
     </div>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery.form/3.51/jquery.form.min.js"></script>
-    <script>
-        $("#btn").click(function () {
-            $('#form1').ajaxSubmit({
-                url: '<%=basePath%>user/uploadCourseExcel',
-                dataType: 'text',
-                success: resutlMsg,
-                error: errorMsg
-            });
-
-            function resutlMsg(msg) {
-                alert(msg);
-                $("#upfile").val("");
-            }
-
-            function errorMsg() {
-                alert("导入excel出错！");
-            }
-        });
-    </script>
-    <script>
-        function insert() {
-            window.location.href = "<%=basePath%>user/insertCourse";
-        }
-    </script>
 </rapid:override>
 <%@ include file="base.jsp"%>

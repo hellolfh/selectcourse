@@ -1,6 +1,7 @@
 package com.xu.select.dao;
 
 
+import com.xu.select.bean.QueryBean;
 import com.xu.select.model.ChooseStartTime;
 import com.xu.select.model.Course;
 import com.xu.select.model.CourseChoose;
@@ -49,4 +50,6 @@ public interface UserDao {
     Course getCourseByCourseNumber(@Param("courseNumber") String courseNumber);
 
     Institution getInstitutionByNumber(@Param("institutionNumber") String institutionNumber);
+
+    List<Course> query(@Param("query") QueryBean query);
 }

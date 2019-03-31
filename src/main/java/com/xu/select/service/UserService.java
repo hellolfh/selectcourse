@@ -1,5 +1,6 @@
 package com.xu.select.service;
 
+import com.xu.select.bean.QueryBean;
 import com.xu.select.model.ChooseStartTime;
 import com.xu.select.model.Course;
 import com.xu.select.model.CourseChoose;
@@ -50,4 +51,6 @@ public interface UserService {
 
     void saveOrUpdateAll(List<Course> courses);
     void saveOrUpdate(Course course);
+
+    List<Course> query(QueryBean query);
  }

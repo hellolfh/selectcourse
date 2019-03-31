@@ -68,7 +68,6 @@
             </div>
         </div>
         <input type="submit" id="success" class="layui-btn layui-btn-danger layui-btn-lg" style="margin:0 550px;">
-            确认提交
         </input>
     </form>
 

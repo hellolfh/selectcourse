@@ -6,7 +6,7 @@
 <html>
 <head>
     <rapid:block name="head"></rapid:block>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <%--<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">--%>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/layui.css">
     <style type="text/css">
         .layui-nav-item.side a {
@@ -25,10 +25,13 @@
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
 %>
 <ul class="layui-nav layui-bg-blue">
-    <li class="layui-nav-item"><a href="<%=basePath%>user/teacherIndex" style="font-size:20px;">首页</a></li>
+    <li class="layui-nav-item"><a href="<%=basePath%>user/index" style="font-size:20px;">首页</a></li>
     <!--这里${requestScope}取不到值，需要改为${param}-->
     <li class="layui-nav-item"><a href="<%=basePath%>user/info?teacherNumber=${sessionScope.user.teacherNumber}" style="font-size:20px;">个人资料</a></li>
     <li class="layui-nav-item "><a href="<%=basePath%>user/courseList?page=1" style="font-size:20px;">我的课程信息</a></li>
+    <li class="layui-nav-item "><a href="<%=basePath%>user/queryIndex" style="font-size:20px;">课程查询</a></li>
+    <li class="layui-nav-item "><a href="<%=basePath%>user/insertCourse" style="font-size:20px;">添加课程</a></li>
+    <li class="layui-nav-item "><a href="<%=basePath%>user/excelImportIndex" style="font-size:20px;">Excel导入</a></li>
     <li class="layui-nav-item" style="float:right; "><a href="<%=basePath%>exit" style="font-size: 20px;">退出登录</a></li>
     <li class="layui-nav-item" style="float:right; font-size:20px;"><i class="layui-icon" style="font-size:18px;" >&#xe612;</i>${sessionScope.username}&nbsp;</li>
 </ul>

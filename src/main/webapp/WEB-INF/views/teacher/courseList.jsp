@@ -13,6 +13,38 @@
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery.form/3.51/jquery.form.min.js"></script>
 
+    <form class="layui-form" style="margin:10px 15px 10px;">
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <div style="display: inline-block">
+                    <div style="width: 180px; float: left; margin-left:-100px;">
+                        <select class="layui-select" id="teasearch">
+                            <option value="0">教师姓名</option>
+                            <c:forEach items="${teaList}" var="teacher">
+                                <option value="${teacher.teaId}">${teacher.teaName}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                    <button type="button" id="tea" class="layui-btn" style="margin-left:10px;">筛选</button>
+                </div>
+                <div style="display: inline-block">
+                    <div style="width: 180px; float: left; margin-left:300px;">
+                        <select class="layui-select" id="inssearch">
+                            <option value="0">学院名称</option>
+                            <c:forEach items="${insList}" var="institution">
+                                <option value="${institution.insId}">${institution.insName}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                    <button type="button" id="ins" class="layui-btn" style="margin-left:10px;">筛选</button>
+                </div>
+                <button type="button" class="layui-btn" style="float:right;" onclick="search()">搜索</button>
+                <input type="text" id="search" class="layui-input" style="float:right; width:200px;"
+                       placeholder="请输入课程编号">
+            </div>
+        </div>
+    </form>
+
     <table class="layui-table" style="margin-top:15px;">
         <colgroup>
             <col width="50">
@@ -51,9 +83,11 @@
                 <td>${course.note}</td>
                 <td>${course.institutionName}</td>
                 <td>
-                    <button class="layui-btn" onclick="edit(${course.courseNumber})">修改</button>
-                    <button class="layui-btn" onclick="delete_fun(${course.courseNumber})">删除</button>
-                    <button class="layui-btn" onclick="detail_fun(${course.courseNumber})">管理</button>
+                    <button class="layui-btn" onclick="select_course(${course.courseNumber})">选课</button>
+                    <button class="layui-btn" onclick="unselect_course(${course.courseNumber})">退课</button>
+                    <button class="layui-btn" onclick="edit_course(${course.courseNumber})">修改</button>
+                    <button class="layui-btn" onclick="delete_course(${course.courseNumber})">删除</button>
+                    <button class="layui-btn" onclick="detail_course(${course.courseNumber})">管理</button>
                 </td>
             </tr>
         </c:forEach>
@@ -102,20 +136,31 @@
             window.location.href = "<%=basePath%>user/courseList?page=" + page;
         }
 
-        function edit(classId) {
+        function select_course(courseNumber) {
+            $.ajax({
+                url:"<%=basePath%>user/courseList",
+                type:post,
+                data: {"courseNumber":courseNumber}
+            });
             window.location.href = "<%=basePath%>user/editCourse?courseid=" + classId;
         }
 
-        function delete_fun(classId) {
-            var r = confirm("确认删除吗？")
+        function unselect_course(courseNumber) {
+            window.location.href = "<%=basePath%>user/editCourse?courseid=" + classId;
+        }
+        function edit_course(courseNumber) {
+            window.location.href = "<%=basePath%>user/editCourse?courseid=" + courseNumber;
+        }
+
+        function delete_course(courseNumber) {
+            var r = confirm("确认删除吗？");
             if (r == true) {
-                window.location.href = "<%=basePath%>user/deleteCourse?courseid=" + classId;
+                window.location.href = "<%=basePath%>user/deleteCourse?courseid=" + courseNumber;
             } else {
                 return;
             }
         }
-
-        function detail_fun(classId) {
+        function detail_course(classId) {
             window.location.href = "<%=basePath%>user/detailCourse?courseid=" + classId + "&page=" + 1;
         }
     </script>

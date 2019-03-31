@@ -39,6 +39,43 @@
         WHERE courseNumber=#{course.courseNumber}
     </update>
 
+
+    <select id="query" resultType="Course">
+        SELECT * FROM Course c
+        <where>
+            <if test="query.courseNumber != null and query.courseNumber !=''" >
+                c.courseNumber = #{query.courseNumber}
+            </if>
+            <if test="query.courseName != null  and query.courseName !=''">
+                and c.courseName = #{query.courseName}
+            </if>
+            <if test="query.property != null  and query.property !=''">
+                and c.property = #{query.property}
+            </if>
+            <if test="query.className != null  and query.className !=''">
+                and c.className = #{query.className}
+            </if>
+            <if test="query.stuTotal != null  and query.stuTotal !=''">
+                and c.stuTotal = #{query.stuTotal}
+            </if>
+            <if test="query.classHour != null  and query.classHour !=''">
+                and c.classHour = #{query.classHour}
+            </if>
+            <if test="query.shiyanHour != null  and query.shiyanHour !=''">
+                and c.shiyanHour = #{query.shiyanHour}
+            </if>
+            <if test="query.note != null  and query.note !=''">
+                and c.note = #{query.note}
+            </if>
+            <if test="query.institutionNumber != null  and query.institutionNumber !=''">
+                and c.institutionNumber = #{query.institutionNumber}
+            </if>
+            <if test="query.institutionName != null  and query.institutionName !=''">
+                and c.institutionName = #{query.institutionName}
+            </if>
+        </where>
+    </select>
+
     <select id="getChooseStartTime" resultType="ChooseStartTime">
         SELECT * FROM ChooseStartTime
     </select>
@@ -90,4 +127,6 @@
     <select id="getInstitutionByNumber" resultType="Institution">
         SELECT * FROM Institution where institutionNumber = #{institutionNumber}
     </select>
+
+
 </mapper>

@@ -10,6 +10,7 @@
         String path = request.getContextPath();
         String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
     %>
+
     <table class="layui-table" style="margin-top:15px;">
         <colgroup>
             <col width="50">
@@ -94,27 +95,27 @@
             </c:choose>
         </c:if>
     </div>
-    <script>
-        function goPage(page) {
-            window.location.href = "<%=basePath%>user/courseList?page=" + page;
-        }
-
-        function edit(classId) {
-            window.location.href = "<%=basePath%>user/editCourse?courseid=" + classId;
-        }
-
-        function delete_fun(classId) {
-            var r = confirm("确认删除吗？")
-            if (r == true) {
-                window.location.href = "<%=basePath%>user/deleteCourse?courseid=" + classId;
-            } else {
-                return;
-            }
-        }
-
-        function detail_fun(classId) {
-            window.location.href = "<%=basePath%>user/detailCourse?courseid=" + classId + "&page=" + 1;
-        }
-    </script>
 </rapid:override>
 <%@ include file="base.jsp" %>
+<script>
+    function goPage(page) {
+        window.location.href = "<%=basePath%>user/courseList?page=" + page;
+    }
+
+    function edit(classId) {
+        window.location.href = "<%=basePath%>user/editCourse?courseid=" + classId;
+    }
+
+    function delete_fun(classId) {
+        var r = confirm("确认删除吗？")
+        if (r == true) {
+            window.location.href = "<%=basePath%>user/deleteCourse?courseid=" + classId;
+        } else {
+            return;
+        }
+    }
+
+    function detail_fun(classId) {
+        window.location.href = "<%=basePath%>user/detailCourse?courseid=" + classId + "&page=" + 1;
+    }
+</script>

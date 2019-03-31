@@ -1,5 +1,6 @@
 package com.xu.select.service.impl;
 
+import com.xu.select.bean.QueryBean;
 import com.xu.select.dao.UserDao;
 import com.xu.select.model.ChooseStartTime;
 import com.xu.select.model.Course;
@@ -10,6 +11,7 @@ import com.xu.select.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -153,5 +155,10 @@ public class UserServiceImpl implements UserService {
             course.setInstitutionName(institution.getName());
             userDao.updateCourse(course);
         }
+    }
+
+    public List<Course> query(QueryBean query) {
+        List<Course> courses = userDao.query(query);
+        return courses;
     }
 }
