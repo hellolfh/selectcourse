@@ -64,11 +64,24 @@ public class UserServiceImpl implements UserService {
     public void updateCourse(CourseBean courseBean) {
         Course course = new Course();
         BeanUtils.copyProperties(courseBean, course);
+        if (!StringUtils.isEmpty(courseBean.getInstitutionNumber())) {
+            Institution institution = getInstitutionByNumber(courseBean.getInstitutionNumber());
+            if (institution == null) {
+                course.setInstitutionName("");
+            } else {
+                course.setInstitutionName(institution.getName());
+            }
+        }
         userDao.updateCourse(course);
         if (!StringUtils.isEmpty(courseBean.getTeacherNumber())) {
-            CourseChoose courseChoose = getCourseChooseBy(courseBean.getTeacherNumber(), courseBean.getCourseNumber());
-            if (courseChoose == null) {
-
+            List<CourseChoose> courseChooses = queryCourseByCourseNumber(courseBean.getCourseNumber());
+            if (CollectionUtils.isEmpty(courseChooses)) {
+                selectCourse(courseBean.getTeacherNumber(), courseBean.getCourseNumber());
+            } else {
+                for (CourseChoose courseChoose : courseChooses) {
+                    cancelSelectCourse(courseChoose.getTeacherNumber(), courseChoose.getCourseNumber());
+                }
+                selectCourse(courseBean.getTeacherNumber(), courseBean.getCourseNumber());
             }
         }
     }

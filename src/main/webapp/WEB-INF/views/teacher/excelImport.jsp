@@ -7,7 +7,7 @@
 </rapid:override>
 <rapid:override name="content">
     <c:if test="${sessionScope.user.role ne 'admin'}">
-        您不是学院管理员, 没有权限
+        <h1 style="color: red">您不是学院管理员, 没有权限</h1>
     </c:if>
     <c:if test="${sessionScope.user.role eq 'admin'}">
         <%

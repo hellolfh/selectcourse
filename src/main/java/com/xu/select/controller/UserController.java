@@ -228,10 +228,9 @@ public class UserController {
 
     // 在修改课程页面修改某个课程的信息，比如课程名，点击确定后的页面
     @RequestMapping("/updateCourseSuccess")
-    public String updateCourseSuccess(@RequestBody CourseBean course, @Param("page") int page, Model model, HttpServletRequest request) {
+    public String updateCourseSuccess(CourseBean course, Model model, HttpServletRequest request) {
         userService.updateCourse(course);
-        model.addAttribute("paging", pageService.subList(page, userService.getAllCourse()));
-        return "teacher/courseList";
+        return "redirect:courseList?page=1";
     }
 
     // 删除某一门课程
@@ -239,7 +238,7 @@ public class UserController {
     public String deleteCourse(@Param("courseid") String courseid, Model model, HttpServletRequest request) {
         userService.deleteCourse(courseid);
         model.addAttribute("paging", pageService.subList(1, userService.getAllCourse()));
-        return "teacher/courseList";
+        return "redirect:courseList?page=1";
     }
 
     //

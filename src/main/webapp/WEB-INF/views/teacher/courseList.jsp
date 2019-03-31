@@ -13,6 +13,7 @@
     %>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery.form/3.51/jquery.form.min.js"></script>
+    <h2 style="color: red">普通老师只能选课退课, 系主任可以修改课程的老师，学院管理员可以删除课程、修改课程</h2>
 
     <table class="layui-table" style="margin-top:15px;">
         <colgroup>
@@ -54,9 +55,9 @@
                 <td>${course.shiyanHour}</td>
                 <td>${course.note}</td>
                 <td>${course.institutionName}</td>
-                <td>${course.teacherName}</td>
+                <td>${course.teacherNumber},${course.teacherName}</td>
                 <td>
-                    <c:if test="${sessionScope.currentUser.teacherNumber eq course.teacherNumber and sessionScope.currentUser.role eq 'teacher'} ">
+                    <c:if test="${sessionScope.currentUser.teacherNumber eq course.teacherNumber and sessionScope.currentUser.role eq 'teacher'}">
                         <button class="layui-btn" onclick="unselect_course(${course.courseNumber})">退课</button>
                     </c:if>
                     <c:if test="${fn:length(course.teacherNumber) == 0 and sessionScope.currentUser.role eq 'teacher'}">
@@ -120,7 +121,7 @@
         function select_course(courseNumber) {
             $.ajax({
                 url:"<%=basePath%>user/selectCourse?courseNumber=" + courseNumber,
-                type:post,
+                type:"post",
                 success:function (e) {
                     window.location.href = "<%=basePath%>user/courseList?page=1";
                 }
@@ -129,7 +130,13 @@
         }
 
         function unselect_course(courseNumber) {
-            window.location.href = "<%=basePath%>user/editCourse?courseid=" + classId;
+            $.ajax({
+                url:"<%=basePath%>user/unselectCourse?courseNumber=" + courseNumber,
+                type:"post",
+                success:function (e) {
+                    window.location.href = "<%=basePath%>user/courseList?page=1";
+                }
+            });
         }
         function edit_course(courseNumber) {
             window.location.href = "<%=basePath%>user/editCourse?courseid=" + courseNumber;

@@ -10,7 +10,7 @@ import com.xu.select.model.Teacher;
 
 import java.util.List;
 
-public interface UserService<queryCourseByCourseNumber> {
+public interface UserService {
     // 根据ID获取老师信息
     public Teacher getByTeacherNumber(String teacherNumber);
     // 修改老师基本信息如用户名密码
@@ -58,5 +58,6 @@ public interface UserService<queryCourseByCourseNumber> {
     void saveOrUpdate(Course course);
 
     List<Course> query(QueryBean query);
+    List<CourseBean> convertToCourseBeanList(List<Course> courses);
     CourseBean convertToCourseBean(Course course);
  }

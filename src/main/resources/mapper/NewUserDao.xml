@@ -101,7 +101,7 @@
         where teacherNumber=#{teacherNumber} and courseNumber=#{courseNumber}
     </delete>
 
-    <select id="queryCourseByCourseNumber">
+    <select id="queryCourseByCourseNumber" resultType="CourseChoose">
         select * from  CourseChoose where courseNumber=#{courseNumber}
     </select>
 

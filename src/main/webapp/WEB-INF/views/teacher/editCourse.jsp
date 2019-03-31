@@ -10,6 +10,7 @@
         String path = request.getContextPath();
         String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
     %>
+    <h2 style="color: red">系管理员可以修改课程的全部属性，系主任只能修改课程的选课老师</h2>
     <c:set var="role" scope="session" value="${sessionScope.currentUser.role}"/>
     <form class="layui-form" id="changeform" method="post" action="<%=basePath%>user/updateCourseSuccess" style="margin:80px 400px; width:450px;">
         <div class="layui-form-item">
@@ -74,7 +75,7 @@
                 <c:forEach items="${insList}" var="ins">
                     <input type="radio" name="institutionNumber" value="${ins.institutionNumber}" title="${ins.name}"
                     <c:if test="${ins.institutionNumber eq course.institutionNumber}"> checked="checked" </c:if>
-                           <c:if test="${role ne 'admin'}">disabled</c:if>/>
+                           <c:if test="${role ne 'admin'}">readonly</c:if>/>
                 </c:forEach>
             </div>
         </div>
