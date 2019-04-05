@@ -1,5 +1,6 @@
 package com.xu.select.controller;
 
+import com.xu.select.DateUtils;
 import com.xu.select.bean.CourseBean;
 import com.xu.select.bean.QueryBean;
 import com.xu.select.excel.ImportExcelUtil;
@@ -13,7 +14,6 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,13 +57,6 @@ public class UserController {
             return "redirect:login";
         }
         model.addAttribute("currentUser", teacher);
-        if (role_teacher.equals(teacher.getRole())) {
-            return "teacher/teacherIndex";
-        } else if (role_depHead.equals(teacher.getRole())) {
-            return "teacher/teacherIndex";
-        } else if (role_admin.equals(teacher.getRole())) {
-            return "teacher/teacherIndex";
-        }
         return "teacher/teacherIndex";
     }
 
@@ -84,14 +77,7 @@ public class UserController {
         }
         request.getSession().setAttribute("user", teacher);
         model.addAttribute("currentUser", teacher);
-        if (role_teacher.equals(teacher.getRole())) {
-            return "teacher/teacherIndex";
-        } else if (role_depHead.equals(teacher.getRole())) {
-            return "teacher/teacherIndex";
-        } else if (role_admin.equals(teacher.getRole())) {
-            return "teacher/teacherIndex";
-        }
-        return "login";
+        return "teacher/teacherIndex";
     }
 
     // 当前用户退出登录
@@ -99,23 +85,6 @@ public class UserController {
     public String exit(HttpServletRequest request) {
         request.getSession().invalidate();
         return "login";
-    }
-
-
-    @RequestMapping("/teacherIndex")
-    public String teacherIndex() {
-        return "teacher/teacherIndex";
-    }
-
-    @RequestMapping("/depHeadIndex")
-    public String depHeadIndex() {
-        return "teacher/depHeadIndex";
-    }
-
-    @RequestMapping("/adminIndex")
-    public String adminIndex(Model model) {
-        model.addAttribute("chooseStartTime", userService.getChooseStartTime());
-        return "teacher/adminIndex";
     }
 
     //当前登录者的信息页面
@@ -187,6 +156,9 @@ public class UserController {
         }
         List<CourseBean> courseBeans = userService.convertToCourseBeanList(courses);
         model.addAttribute("paging", pageService.subList(page, courseBeans));
+        model.addAttribute("ifStartSelectCourse", ifStartSelectCourse());
+        ChooseStartTime chooseStartTime = userService.getChooseStartTime();
+        model.addAttribute("startTime", DateUtils.getDate2String(DateUtils.YYYY_MM_DD_HH_MM_SS, chooseStartTime.getStartTime()));
         return "teacher/courseList";
     }
 
@@ -306,7 +278,7 @@ public class UserController {
             ServletOutputStream out = response.getOutputStream();
             try {
                 //设置文件头：最后一个参数是设置下载文件名(这里我们叫：张三.pdf)
-                String fileName = "选课" + (new Date()).toString() + ".xls";
+                String fileName = "选课" + DateUtils.getDate2String(DateUtils.YYYY_MM_DD_HH_MM_SS, new Date()) + ".xls";
                 response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode(fileName, "UTF-8"));
             } catch (UnsupportedEncodingException e1) {
                 e1.printStackTrace();
@@ -352,11 +324,14 @@ public class UserController {
 
     // 课程查询首页
     @RequestMapping("/queryIndex")
-    public String queryIndex(HttpServletRequest request) {
+    public String queryIndex(HttpServletRequest request, Model model) {
         Teacher teacher = getLoginUser(request);
         if (teacher == null) {
             return "redirect:login";
         }
+        model.addAttribute("ifStartSelectCourse", ifStartSelectCourse());
+        ChooseStartTime chooseStartTime = userService.getChooseStartTime();
+        model.addAttribute("startTime", DateUtils.getDate2String(DateUtils.YYYY_MM_DD_HH_MM_SS, chooseStartTime.getStartTime()));
         return "teacher/shaixuan";
     }
 
@@ -378,7 +353,10 @@ public class UserController {
 
     // 设置选课开始时间
     @RequestMapping("/setChooseStartTime")
-    public String setChooseStartTime(ChooseStartTime chooseStartTime) {
+    public String setChooseStartTime(String startTime) {
+        ChooseStartTime chooseStartTime = new ChooseStartTime();
+        Date date = DateUtils.getString2Date(DateUtils.YYYY_MM_DD_HH_MM_SS, startTime);
+        chooseStartTime.setStartTime(date);
         ChooseStartTime dbChooseStartTime = userService.getChooseStartTime();
         if (dbChooseStartTime == null) {
             //增加一行记录
@@ -388,11 +366,32 @@ public class UserController {
             // 修改一行记录
             userService.updateChooseStartTime(dbChooseStartTime);
         }
-        return "";
+        return "redirect:setTimeIndex";
+    }
+
+    @RequestMapping("/setTimeIndex")
+    public String setTimeIndex(Model model) {
+        ChooseStartTime chooseStartTime = userService.getChooseStartTime();
+        model.addAttribute("startTime", DateUtils.getDate2String(DateUtils.YYYY_MM_DD_HH_MM_SS, chooseStartTime.getStartTime()));
+        return "/teacher/setTimeIndex";
     }
 
     public Teacher getLoginUser(HttpServletRequest request) {
         Teacher teacher = (Teacher) request.getSession().getAttribute("user");
         return teacher;
+    }
+
+    /**
+     * 如果设置了选课时间，选课时间比现在时间晚就没到选课时候，返回false。
+     * @return
+     */
+    public boolean ifStartSelectCourse() {
+        ChooseStartTime chooseStartTime = userService.getChooseStartTime();
+        Date now = new Date();
+        boolean ifStartSelectCourse = true;
+        if (chooseStartTime.getStartTime() != null && chooseStartTime.getStartTime().after(now)) {
+            ifStartSelectCourse = false;
+        }
+        return ifStartSelectCourse;
     }
 }

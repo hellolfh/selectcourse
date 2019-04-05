@@ -32,6 +32,7 @@
     <li class="layui-nav-item "><a href="<%=basePath%>user/queryIndex" style="font-size:20px;">课程查询</a></li>
     <li class="layui-nav-item "><a href="<%=basePath%>user/insertCourse" style="font-size:20px;">添加课程</a></li>
     <li class="layui-nav-item "><a href="<%=basePath%>user/excelImportIndex" style="font-size:20px;">Excel导入</a></li>
+    <li class="layui-nav-item "><a href="<%=basePath%>user/setTimeIndex" style="font-size:20px;">设置选课时间</a></li>
     <li class="layui-nav-item" style="float:right; "><a href="<%=basePath%>user/exit" style="font-size: 20px;">退出登录</a></li>
     <li class="layui-nav-item" style="float:right; font-size:20px;"><i class="layui-icon" style="font-size:18px;" >&#xe612;</i>${sessionScope.currentUser.name}&nbsp;</li>
 </ul>
