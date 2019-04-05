@@ -37,7 +37,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
-@SessionAttributes(value ={"currentUser"},types={Teacher.class})
+@SessionAttributes(value = {"currentUser"}, types = {Teacher.class})
 public class UserController {
     public static String role_teacher = "teacher";
     public static String role_depHead = "depHead";
@@ -73,11 +73,10 @@ public class UserController {
         if (teacher == null || !teacher.getPassword().equals(pass)) {
             model.addAttribute("msg", "密码错误");
             //这里不加redirect，否则前端el取不到值
-            return "login";
+            return "redirect:login";
         }
         request.getSession().setAttribute("user", teacher);
-        model.addAttribute("currentUser", teacher);
-        return "teacher/teacherIndex";
+        return "redirect:index";
     }
 
     // 当前用户退出登录
@@ -124,7 +123,6 @@ public class UserController {
 
     @RequestMapping("/courseList")
     public String courseList(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
-                             QueryBean query,
                              Model model, HttpServletRequest request) {
         Teacher teacher = getLoginUser(request);
         if (teacher == null) {
@@ -132,27 +130,16 @@ public class UserController {
         }
         List<Course> courses = new ArrayList<>();
         if (role_admin.equals(teacher.getRole())) {
-            if (!query.isSetValue()) {
-                courses = userService.getAllCourse();
-            } else {
-                courses = userService.query(query);
-            }
+            courses = userService.getAllCourse();
+
         } else if (role_depHead.equals(teacher.getRole())) {
             // 系主任可以看到该系的所有的课程
-            if (!query.isSetValue()) {
-                String institutionNumber = teacher.getInstitutionNumber();
-                courses = userService.getCourseByInstitutionNumber(institutionNumber);
-            } else {
-                courses = userService.query(query);
-            }
+            String institutionNumber = teacher.getInstitutionNumber();
+            courses = userService.getCourseByInstitutionNumber(institutionNumber);
         } else {
-            if (!query.isSetValue()) {
-                // 普通老师也可以看到所在系的所有的课程
-                String institutionNumber = teacher.getInstitutionNumber();
-                courses = userService.getCourseByInstitutionNumber(institutionNumber);
-            } else {
-                courses = userService.query(query);
-            }
+            // 普通老师也可以看到所在系的所有的课程
+            String institutionNumber = teacher.getInstitutionNumber();
+            courses = userService.getCourseByInstitutionNumber(institutionNumber);
         }
         List<CourseBean> courseBeans = userService.convertToCourseBeanList(courses);
         model.addAttribute("paging", pageService.subList(page, courseBeans));
@@ -301,7 +288,7 @@ public class UserController {
     @ResponseBody
     public String selectCourse(String courseNumber, HttpServletRequest request) {
         Teacher teacher = getLoginUser(request);
-        userService.selectCourse(teacher.getTeacherNumber(),courseNumber);
+        userService.selectCourse(teacher.getTeacherNumber(), courseNumber);
         return "success";
     }
 
@@ -310,7 +297,7 @@ public class UserController {
     @ResponseBody
     public String unselectCourse(String courseNumber, HttpServletRequest request) {
         Teacher teacher = getLoginUser(request);
-        userService.cancelSelectCourse(teacher.getTeacherNumber(),courseNumber);
+        userService.cancelSelectCourse(teacher.getTeacherNumber(), courseNumber);
         return "success";
     }
 
